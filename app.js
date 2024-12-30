@@ -269,7 +269,7 @@ app.get('/api/dettools', (req, res) => {
       COUNT(*) AS count
     FROM tools
     JOIN categories ON tools.category = categories.id
-    GROUP BY categories.name;
+    GROUP BY categories.name, tools.category;
   `;
 
   // Exécution de la requête pour les outils
