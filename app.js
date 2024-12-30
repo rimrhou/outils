@@ -263,7 +263,10 @@ app.get('/api/tools', (req, res) => {
 app.get('/api/dettools', (req, res) => {
   const toolsQuery = 'SELECT * FROM tools';
   const categoriesQuery = `
-    SELECT categories.name AS category_name, tools.category AS name, COUNT(*) AS count
+    SELECT 
+      categories.name AS category_name, 
+      tools.category AS name, 
+      COUNT(*) AS count
     FROM tools
     JOIN categories ON tools.category = categories.id
     GROUP BY categories.name, tools.category;
@@ -272,13 +275,13 @@ app.get('/api/dettools', (req, res) => {
   // Exécution de la requête pour les outils
   db.query(toolsQuery, (err, toolsResults) => {
     if (err) {
-      return res.status(500).json({ message: "Erreur lors de la récupération des outils." });
+      return res.status(500).json({ message: "Erreur lors de la récupération des outils.", error: err.message });
     }
 
     // Exécution de la requête pour les catégories
     db.query(categoriesQuery, (err, categoriesResults) => {
       if (err) {
-        return res.status(500).json({ message: "Erreur lors de la récupération des catégories." });
+        return res.status(500).json({ message: "Erreur lors de la récupération des catégories.", error: err.message });
       }
 
       // Répondre avec les données organisées
