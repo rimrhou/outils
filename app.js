@@ -233,29 +233,31 @@ app.delete('/api/tools/:id', (req, res) => {
 
 // Lister tous les outils et catégories
 app.get('/api/tools', (req, res) => {
+  // Requêtes pour récupérer les outils et les catégories
   const toolsQuery = 'SELECT * FROM tools';
   const categoriesQuery = 'SELECT * FROM categories';
   
   // Exécution de la requête pour les outils
-  pool.query(toolsQuery, (err, toolsResults) => {
+  db.query(toolsQuery, (err, toolsResults) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la récupération des outils." });
     }
 
     // Exécution de la requête pour les catégories
-    pool.query(categoriesQuery, (err, categoriesResults) => {
+    db.query(categoriesQuery, (err, categoriesResults) => {
       if (err) {
         return res.status(500).json({ message: "Erreur lors de la récupération des catégories." });
       }
 
       // Réponse avec les données des outils et des catégories
       res.json({
-        tools: toolsResults.rows,        // Outils
+        tools: toolsResults.rows,       // Outils
         categories: categoriesResults.rows // Catégories
       });
     });
   });
 });
+
 
 // Récupérer les outils et les catégories avec des statistiques
 app.get('/api/dettools', (req, res) => {
