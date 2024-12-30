@@ -177,17 +177,23 @@ app.delete('/api/categories/:id', (req, res) => {
 // Ajouter un outil
 app.post('/api/tools', (req, res) => {
   const { designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut } = req.body;
+
   const query = `
     INSERT INTO tools 
     (designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-  db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut], (err, result) => {
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`;
+
+  const values = [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut];
+
+  db.query(query, values, (err, result) => {
     if (err) {
+      console.error('Erreur lors de l\'ajout de l\'outil:', err);
       return res.status(500).json({ message: "Erreur lors de l'ajout d'outil." });
     }
     res.status(201).json({ message: "Outil ajouté avec succès." });
   });
 });
+
 
 // Mettre à jour un outil
 app.put('/api/tools/:id', (req, res) => {
