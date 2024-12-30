@@ -206,7 +206,7 @@ app.put('/api/tools/:id', (req, res) => {
     WHERE id = $18
   `;
   
-  pool.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, id], (err, result) => {
+  db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la mise à jour de l'outil." });
     }
@@ -218,7 +218,7 @@ app.put('/api/tools/:id', (req, res) => {
 app.delete('/api/tools/:id', (req, res) => {
   const { id } = req.params;
 
-  pool.query('DELETE FROM tools WHERE id = $1', [id], (err, result) => {
+  db.query('DELETE FROM tools WHERE id = $1', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la suppression de l'outil." });
     }
@@ -270,13 +270,13 @@ app.get('/api/dettools', (req, res) => {
   `;
 
   // Exécution de la requête pour les outils
-  pool.query(toolsQuery, (err, toolsResults) => {
+  db.query(toolsQuery, (err, toolsResults) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la récupération des outils." });
     }
 
     // Exécution de la requête pour les catégories
-    pool.query(categoriesQuery, (err, categoriesResults) => {
+    db.query(categoriesQuery, (err, categoriesResults) => {
       if (err) {
         return res.status(500).json({ message: "Erreur lors de la récupération des catégories." });
       }
