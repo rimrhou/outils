@@ -202,9 +202,11 @@ app.put('/api/tools/:id', (req, res) => {
 
   const query = `
     UPDATE tools 
-    SET designation=?, nature=?, type=?, marque=?, reference=?, puissance=?, couleur=?, numero_serie=?, quantite=?, etat=?, utilise_avec=?, client=?, emplacement=?, description=?, remarque=?, observation=?, statut=? 
-    WHERE id = ?`;
-  db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, id], (err, result) => {
+    SET designation = $1, nature = $2, type = $3, marque = $4, reference = $5, puissance = $6, couleur = $7, numero_serie = $8, quantite = $9, etat = $10, utilise_avec = $11, client = $12, emplacement = $13, description = $14, remarque = $15, observation = $16, statut = $17
+    WHERE id = $18
+  `;
+  
+  pool.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la mise à jour de l'outil." });
     }
@@ -216,12 +218,12 @@ app.put('/api/tools/:id', (req, res) => {
 app.delete('/api/tools/:id', (req, res) => {
   const { id } = req.params;
 
-  db.query('DELETE FROM tools WHERE id = ?', [id], (err, result) => {
+  pool.query('DELETE FROM tools WHERE id = $1', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la suppression de l'outil." });
     }
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ message: "Outil non trouvé." });
     }
 
@@ -229,60 +231,58 @@ app.delete('/api/tools/:id', (req, res) => {
   });
 });
 
-// Lister tous les outils
+// Lister tous les outils et catégories
 app.get('/api/tools', (req, res) => {
-  // Requêtes pour récupérer les outils et les catégories
   const toolsQuery = 'SELECT * FROM tools';
   const categoriesQuery = 'SELECT * FROM categories';
   
   // Exécution de la requête pour les outils
-  db.query(toolsQuery, (err, toolsResults) => {
+  pool.query(toolsQuery, (err, toolsResults) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la récupération des outils." });
     }
 
     // Exécution de la requête pour les catégories
-    db.query(categoriesQuery, (err, categoriesResults) => {
+    pool.query(categoriesQuery, (err, categoriesResults) => {
       if (err) {
         return res.status(500).json({ message: "Erreur lors de la récupération des catégories." });
       }
 
       // Réponse avec les données des outils et des catégories
       res.json({
-        tools: toolsResults.rows,       // Outils
+        tools: toolsResults.rows,        // Outils
         categories: categoriesResults.rows // Catégories
       });
     });
   });
 });
 
-
-
-
-app.get('/api/dettools', (req, res) => {0..toExponential.apply
+// Récupérer les outils et les catégories avec des statistiques
+app.get('/api/dettools', (req, res) => {
   const toolsQuery = 'SELECT * FROM tools';
   const categoriesQuery = `
-    SELECT categories.name AS category_name , tools.category as name , COUNT(*) AS count
-FROM tools
-JOIN categories ON tools.category = categories.id
-GROUP BY categories.name;
-
+    SELECT categories.name AS category_name, tools.category AS name, COUNT(*) AS count
+    FROM tools
+    JOIN categories ON tools.category = categories.id
+    GROUP BY categories.name, tools.category;
   `;
 
-  db.query(toolsQuery, (err, toolsResults) => {
+  // Exécution de la requête pour les outils
+  pool.query(toolsQuery, (err, toolsResults) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la récupération des outils." });
     }
 
-    db.query(categoriesQuery, (err, categoriesResults) => {
+    // Exécution de la requête pour les catégories
+    pool.query(categoriesQuery, (err, categoriesResults) => {
       if (err) {
         return res.status(500).json({ message: "Erreur lors de la récupération des catégories." });
       }
 
       // Répondre avec les données organisées
       res.json({
-        tools: toolsResults,
-        categories: categoriesResults
+        tools: toolsResults.rows,        // Outils
+        categories: categoriesResults.rows // Catégories
       });
     });
   });
