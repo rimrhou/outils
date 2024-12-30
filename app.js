@@ -180,10 +180,10 @@ app.post('/api/tools', (req, res) => {
   const query = `
     INSERT INTO tools 
     (designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`;
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut], (err, result) => {
     if (err) {
-      return res.status(500).json({ message: "Erreur lors de l'ajout de l'outil." });
+      return res.status(500).json({ message: "Erreur lors de l'ajout d'outil." });
     }
     res.status(201).json({ message: "Outil ajouté avec succès." });
   });
@@ -196,8 +196,8 @@ app.put('/api/tools/:id', (req, res) => {
 
   const query = `
     UPDATE tools 
-    SET designation=$1, nature=$2, type=$3, marque=$4, reference=$5, puissance=$6, couleur=$7, numero_serie=$8, quantite=$9, etat=$10, utilise_avec=$11, client=$12, emplacement=$13, description=$14, remarque=$15, observation=$16, statut=$17 
-    WHERE id = $18`;
+    SET designation=?, nature=?, type=?, marque=?, reference=?, puissance=?, couleur=?, numero_serie=?, quantite=?, etat=?, utilise_avec=?, client=?, emplacement=?, description=?, remarque=?, observation=?, statut=? 
+    WHERE id = ?`;
   db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la mise à jour de l'outil." });
@@ -210,12 +210,12 @@ app.put('/api/tools/:id', (req, res) => {
 app.delete('/api/tools/:id', (req, res) => {
   const { id } = req.params;
 
-  db.query('DELETE FROM tools WHERE id = $1', [id], (err, result) => {
+  db.query('DELETE FROM tools WHERE id = ?', [id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la suppression de l'outil." });
     }
 
-    if (result.rowCount === 0) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Outil non trouvé." });
     }
 
@@ -245,14 +245,16 @@ app.get('/api/tools', (req, res) => {
 });
 
 
-// API pour récupérer les outils et les détails des catégories
-app.get('/api/dettools', (req, res) => {
+
+
+app.get('/api/dettools', (req, res) => {0..toExponential.apply
   const toolsQuery = 'SELECT * FROM tools';
   const categoriesQuery = `
-    SELECT categories.name AS category_name, COUNT(*) AS count
-    FROM tools
-    JOIN categories ON tools.category = categories.id
-    GROUP BY categories.name;
+    SELECT categories.name AS category_name , tools.category as name , COUNT(*) AS count
+FROM tools
+JOIN categories ON tools.category = categories.id
+GROUP BY categories.name;
+
   `;
 
   db.query(toolsQuery, (err, toolsResults) => {
@@ -267,8 +269,8 @@ app.get('/api/dettools', (req, res) => {
 
       // Répondre avec les données organisées
       res.json({
-        tools: toolsResults.rows,
-        categories: categoriesResults.rows
+        tools: toolsResults,
+        categories: categoriesResults
       });
     });
   });
