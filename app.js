@@ -176,14 +176,14 @@ app.delete('/api/categories/:id', (req, res) => {
 // Routes pour la gestion des outils
 // Ajouter un outil
 app.post('/api/tools', (req, res) => {
-  const { designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category } = req.body;
+  const { designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category, valeur, session } = req.body;
 
   const query = `
     INSERT INTO tools 
-    (designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`;
+    (designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category, valeur, session) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`;
 
-  const values = [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category];
+  const values = [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category, valeur, session];
 
   db.query(query, values, (err, result) => {
     if (err) {
@@ -198,15 +198,16 @@ app.post('/api/tools', (req, res) => {
 // Mettre à jour un outil
 app.put('/api/tools/:id', (req, res) => {
   const { id } = req.params;
-  const { designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category } = req.body;
+  const { designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category, valeur, session } = req.body;
 
   const query = `
     UPDATE tools 
-    SET designation = $1, nature = $2, type = $3, marque = $4, reference = $5, puissance = $6, couleur = $7, numero_serie = $8, quantite = $9, etat = $10, utilise_avec = $11, client = $12, emplacement = $13, description = $14, remarque = $15, observation = $16, statut = $17, category = $18
-    WHERE id = $19
+    SET designation = $1, nature = $2, type = $3, marque = $4, reference = $5, puissance = $6, couleur = $7, numero_serie = $8, quantite = $9, etat = $10, utilise_avec = $11, client = $12, emplacement = $13, description = $14, remarque = $15, observation = $16, statut = $17, category = $18, valeur = $19, session = $20,
+    WHERE id = $21
+
   `;
   
-  db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category, id], (err, result) => {
+  db.query(query, [designation, nature, type, marque, reference, puissance, couleur, numero_serie, quantite, etat, utilise_avec, client, emplacement, description, remarque, observation, statut, category,valeur,session, id], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Erreur lors de la mise à jour de l'outil." });
     }
