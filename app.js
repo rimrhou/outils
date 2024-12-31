@@ -202,7 +202,7 @@ app.put('/api/tools/:id', (req, res) => {
 
   const query = `
     UPDATE tools 
-    SET designation = $1, nature = $2, type = $3, marque = $4, reference = $5, puissance = $6, couleur = $7, numero_serie = $8, quantite = $9, etat = $10, utilise_avec = $11, client = $12, emplacement = $13, description = $14, remarque = $15, observation = $16, statut = $17, category = $18, valeur = $19, session = $20,
+    SET designation = $1, nature = $2, type = $3, marque = $4, reference = $5, puissance = $6, couleur = $7, numero_serie = $8, quantite = $9, etat = $10, utilise_avec = $11, client = $12, emplacement = $13, description = $14, remarque = $15, observation = $16, statut = $17, category = $18, valeur = $19, session = $20
     WHERE id = $21
 
   `;
